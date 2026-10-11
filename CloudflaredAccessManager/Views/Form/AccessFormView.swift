@@ -1,5 +1,5 @@
 //
-//  AddAccessSheet.swift
+//  AccessFormView.swift
 //  CloudflaredAccessManager
 //
 //  Created by Tude Maha on 11/10/2026.
@@ -8,17 +8,30 @@
 import SwiftUI
 import SwiftData
 
-struct AddAccessSheet: View {
-    @Environment(\.modelContext) private var modelContext
+struct AccessFormView: View {
+    var access: Access? = nil
+    
     @Environment(\.dismiss) private var dismiss
 
-    @State private var remoteHostname: String = ""
-    @State private var localHostname: String = "localhost"
-    @State private var localPort: String = ""
-    @State private var connectionType: ConnectionType = .tcp
+    @State private var remoteHostname: String
+    @State private var localHostname: String
+    @State private var localPort: String
+    @State private var connectionType: ConnectionType
     
     @State private var showErrorAlert: Bool = false
     @State private var errorMessage: String = ""
+
+    init(access: Access? = nil) {
+        self.access = access
+        _remoteHostname = State(initialValue: access?.remoteHostname.absoluteString ?? "")
+        _localHostname = State(initialValue: access?.localHostname ?? "localhost")
+        _localPort = State(initialValue: access != nil ? String(access!.localPort) : "")
+        _connectionType = State(initialValue: access?.connectionType ?? .tcp)
+    }
+
+    private var isEditing: Bool {
+        access != nil
+    }
 
     private var isValid: Bool {
         !remoteHostname.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
@@ -29,8 +42,9 @@ struct AddAccessSheet: View {
 
     var body: some View {
         VStack(spacing: 0) {
+            // Header
             HStack {
-                Text("Add Connection")
+                Text(isEditing ? "Edit Connection" : "Add Connection")
                     .font(.headline)
                 Spacer()
             }
@@ -38,6 +52,7 @@ struct AddAccessSheet: View {
 
             Divider()
 
+            // Form Content
             Form {
                 Section("Remote") {
                     TextField("Remote Hostname", text: $remoteHostname, prompt: Text("e.g. tcp.example.com"))
@@ -60,6 +75,7 @@ struct AddAccessSheet: View {
 
             Divider()
 
+            // Actions
             HStack {
                 Button("Cancel", role: .cancel) {
                     dismiss()
@@ -68,7 +84,7 @@ struct AddAccessSheet: View {
 
                 Spacer()
 
-                Button("Save") {
+                Button(isEditing ? "Update" : "Save") {
                     saveAccess()
                 }
                 .buttonStyle(.borderedProminent)
@@ -89,7 +105,7 @@ struct AddAccessSheet: View {
         let trimmedRemote = remoteHostname.trimmingCharacters(in: .whitespacesAndNewlines)
         let trimmedLocal = localHostname.trimmingCharacters(in: .whitespacesAndNewlines)
         
-        guard let port = Int(localPort) else {
+        guard let port = Int(localPort), (1...65535).contains(port) else {
             errorMessage = "Port must be a valid number between 1 and 65535."
             showErrorAlert = true
             return
@@ -107,17 +123,22 @@ struct AddAccessSheet: View {
             return
         }
 
-        let newAccess = Access(
-            connectionType: connectionType,
-            remoteHostname: url,
-            localHostname: trimmedLocal,
-            localPort: port
-        )
-
-        modelContext.insert(newAccess)
-        
         do {
-            try modelContext.save()
+            if let access {
+                access.connectionType = connectionType
+                access.remoteHostname = url
+                access.localHostname = trimmedLocal
+                access.localPort = port
+                try AccessStorageManager.shared.save()
+            } else {
+                let newAccess = Access(
+                    connectionType: connectionType,
+                    remoteHostname: url,
+                    localHostname: trimmedLocal,
+                    localPort: port
+                )
+                try AccessStorageManager.shared.add(access: newAccess)
+            }
             dismiss()
         } catch {
             errorMessage = error.localizedDescription
@@ -126,7 +147,12 @@ struct AddAccessSheet: View {
     }
 }
 
-#Preview {
-    AddAccessSheet()
+#Preview("Add Mode") {
+    AccessFormView()
+        .modelContainer(for: Access.self, inMemory: true)
+}
+
+#Preview("Edit Mode") {
+    AccessFormView(access: Access.sampleData.first!)
         .modelContainer(for: Access.self, inMemory: true)
 }
