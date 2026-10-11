@@ -9,22 +9,46 @@ import SwiftUI
 import SwiftData
 
 struct DetailView: View {
-    @Query private var accesses: [Access]
-    var selectedAccess: Access?
-    
+    @Binding var selectedAccess: Access?
+
     var body: some View {
-        VStack {
-            if let selectedAccess {
-                Text(selectedAccess.remoteHostname.absoluteString)
+        Group {
+            if let access = selectedAccess {
+                DetailForm(
+                    access: access,
+                    onDelete: {
+                        deleteAccess(access)
+                    }
+                )
+                .id(access.persistentModelID)
             } else {
-                Text("Select an access")
-                    .foregroundStyle(.secondary)
+                ContentUnavailableView(
+                    "No Connection Selected",
+                    systemImage: "network",
+                    description: Text("Select an access from the sidebar to view or edit its details.")
+                )
             }
         }
-        .frame(minWidth: 300, maxWidth: .infinity, maxHeight: .infinity)
+        .frame(minWidth: 400, maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private func deleteAccess(_ access: Access) {
+        selectedAccess = nil
+        do {
+            try AccessStorageManager.shared.delete(access: access)
+        } catch {
+            print("Failed to delete access: \(error)")
+        }
     }
 }
 
 #Preview {
-    DetailView()
+    let config = ModelConfiguration(isStoredInMemoryOnly: true)
+    let container = try! ModelContainer(for: Access.self, configurations: config)
+    for sample in Access.sampleData {
+        container.mainContext.insert(sample)
+    }
+
+    return DetailView(selectedAccess: .constant(Access.sampleData.first))
+        .modelContainer(container)
 }

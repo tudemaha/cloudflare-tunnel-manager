@@ -17,7 +17,7 @@ struct MainView: View {
         NavigationSplitView {
             ListView(selectedAccess: $selectedAccess)
         } detail: {
-            DetailView(selectedAccess: selectedAccess)
+            DetailView(selectedAccess: $selectedAccess)
         }
         .onAppear {
             seedSampleDataIfNeeded()
