@@ -22,6 +22,10 @@ struct CloudflaredAccessManagerApp: App {
             fatalError("Could not create ModelContainer: \(error)")
         }
     }()
+    
+    init() {
+        AccessStorageManager.shared.context = sharedModelContainer.mainContext
+    }
 
     var body: some Scene {
         WindowGroup {

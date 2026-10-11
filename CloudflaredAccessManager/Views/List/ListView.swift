@@ -13,11 +13,21 @@ struct ListView: View {
     @Binding var selectedAccess: Access?
     
     @State private var isShowAddSheet = false
+    @State private var showErrorAlert = false
+    @State private var errorMessage = ""
+
     
     var body: some View {
         List(selection: $selectedAccess) {
             ForEach(accesses) { access in
                 Item(access: access)
+                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                        Button(role: .destructive) {
+                            deleteAccess(access)
+                        } label: {
+                            Label("Delete", systemImage: "trash")
+                        }
+                    }
             }
         }
         .listStyle(.sidebar)
@@ -34,6 +44,23 @@ struct ListView: View {
         }
         .sheet(isPresented: $isShowAddSheet) {
             AddAccessSheet()
+        }
+        .alert("Error", isPresented: $showErrorAlert) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text(errorMessage)
+        }
+    }
+    
+    private func deleteAccess(_ access: Access) {
+        if selectedAccess == access {
+            selectedAccess = nil
+        }
+        do {
+            try AccessStorageManager.shared.delete(access: access)
+        } catch {
+            errorMessage = error.localizedDescription
+            showErrorAlert = true
         }
     }
 }
