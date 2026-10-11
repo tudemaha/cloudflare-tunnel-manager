@@ -18,7 +18,7 @@ struct ListView: View {
             }
         }
         .listStyle(.sidebar)
-        .frame(minWidth: 200, idealWidth: 260, maxWidth: 400)
+        .navigationSplitViewColumnWidth(min: 200, ideal: 260, max: 400)
     }
 }
 

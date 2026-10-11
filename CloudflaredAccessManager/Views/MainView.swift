@@ -14,9 +14,9 @@ struct MainView: View {
     @State private var selectedAccess: Access?
 
     var body: some View {
-        HSplitView {
+        NavigationSplitView {
             ListView(selectedAccess: $selectedAccess)
-            
+        } detail: {
             DetailView(selectedAccess: selectedAccess)
         }
         .onAppear {
