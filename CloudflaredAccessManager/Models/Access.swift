@@ -9,11 +9,17 @@ import Foundation
 import SwiftData
 import SwiftUI
 
-enum ConnectionType: String, Codable {
+enum ConnectionType: String, Codable, CaseIterable, Identifiable {
     case tcp
     case rdp
     case ssh
     case smb
+    
+    var id: String { self.rawValue }
+    
+    var displayName: String {
+        self.rawValue.uppercased()
+    }
 }
 
 enum execState: String, Codable {

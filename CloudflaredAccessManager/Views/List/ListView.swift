@@ -11,6 +11,9 @@ import SwiftData
 struct ListView: View {
     @Query private var accesses: [Access]
     @Binding var selectedAccess: Access?
+    
+    @State private var isShowAddSheet = false
+    
     var body: some View {
         List(selection: $selectedAccess) {
             ForEach(accesses) { access in
@@ -19,6 +22,19 @@ struct ListView: View {
         }
         .listStyle(.sidebar)
         .navigationSplitViewColumnWidth(min: 200, ideal: 260, max: 400)
+        .toolbar {
+            ToolbarItem(placement: .automatic) {
+                Button {
+                    isShowAddSheet = true
+                } label: {
+                    Label("Add Connection", systemImage: "plus")
+                }
+                .help("Add new Cloudflared access connection")
+            }
+        }
+        .sheet(isPresented: $isShowAddSheet) {
+            AddAccessSheet()
+        }
     }
 }
 
