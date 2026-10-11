@@ -14,6 +14,11 @@ struct DetailForm: View {
 
     @State private var isShowingEditSheet = false
     @State private var showDeleteConfirmation = false
+    @State private var showTerminal = false
+
+    private var isRunning: Bool {
+        access.state == .started
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -31,6 +36,36 @@ struct DetailForm: View {
 
             DetailInfoForm(access: access)
                 .padding(.horizontal)
+
+            if showTerminal || isRunning {
+                Divider()
+
+                TerminalView(access: access)
+                    .padding(12)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+        }
+        .animation(.easeInOut(duration: 0.25), value: showTerminal || isRunning)
+        .onAppear {
+            if access.state == .started {
+                showTerminal = true
+            }
+        }
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button {
+                    togglePlay()
+                } label: {
+                    if isRunning {
+                        Label("Stop", systemImage: "stop.fill")
+                            .foregroundStyle(.red)
+                    } else {
+                        Label("Start", systemImage: "play.fill")
+                            .foregroundStyle(.green)
+                    }
+                }
+                .help(isRunning ? "Stop connection" : "Start connection")
+            }
         }
         .sheet(isPresented: $isShowingEditSheet) {
             AccessFormView(access: access)
@@ -46,6 +81,18 @@ struct DetailForm: View {
             Button("Cancel", role: .cancel) { }
         } message: {
             Text("Are you sure you want to delete \(access.remoteHostname.absoluteString)? This action cannot be undone.")
+        }
+    }
+
+    private func togglePlay() {
+        withAnimation {
+            if access.state == .started {
+                access.state = .stopped
+            } else {
+                access.state = .started
+                showTerminal = true
+            }
+            try? AccessStorageManager.shared.save()
         }
     }
 }
