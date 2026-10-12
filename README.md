@@ -4,7 +4,7 @@
 
 # Cloudflare Tunnel Manager
 
-A sleek, native macOS GUI client to manage and run `cloudflared access` tunnels (SSH, RDP, TCP, SMB).
+A native macOS GUI client to manage and run `cloudflared access` tunnels (SSH, RDP, TCP, SMB).
 
 [![Platform](https://img.shields.io/badge/platform-macOS%2014.6%2B-blue.svg)]()
 [![Swift](https://img.shields.io/badge/Swift-5.0%20%7C%206.0-orange.svg)]()
@@ -16,7 +16,7 @@ A sleek, native macOS GUI client to manage and run `cloudflared access` tunnels 
 
 ---
 
-## 📖 Overview
+## Overview
 
 **Cloudflare Tunnel Manager (CFT Manager)** is a native macOS application designed to simplify connecting to private services protected behind Cloudflare Zero Trust.
 
