@@ -47,6 +47,7 @@ CloudflareTunnelManager/
 │   │   └── Form/                         # Create / Edit modals
 │   │       └── TunnelFormView.swift      # Sheet for creating or updating a Tunnel
 │   └── Resources/
+│       ├── icon.png                      # App Icon PNG for README / Documentation
 │       ├── CFTManager.icon               # Apple Icon Composer document (App Icon)
 │       └── Assets.xcassets/              # AccentColor, AppIcon fallback, color sets
 ├── .gitignore                            # Standard Xcode / macOS git ignore rules

@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/icon.png" alt="Cloudflare Tunnel Manager Icon" width="128" height="128" />
+<img src="CloudflareTunnelManager/Resources/icon.png" alt="Cloudflare Tunnel Manager Icon" width="128" height="128" />
 
 # Cloudflare Tunnel Manager
 
