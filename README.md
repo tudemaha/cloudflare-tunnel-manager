@@ -51,11 +51,21 @@ brew install cloudflared
 ### Method 1: Download `.dmg` (Recommended)
 
 1. Go to the [Releases](https://github.com/tudemaha/cloudflare-tunnel-manager/releases) page.
-2. Download the latest `CFT-Manager.dmg`.
+2. Download the latest `CFTManager.dmg`.
 3. Open the `.dmg` file and drag **CFT Manager** into your **Applications** folder.
 4. Launch **CFT Manager** from Launchpad or Spotlight (`⌘ Space`).
 
-> _If macOS shows a security prompt regarding an unidentified developer, open **System Settings > Privacy & Security** and click **Open Anyway**._
+> [!NOTE]
+> **First-Time Launch (Unsigned App / Gatekeeper Notice):**  
+> Since this app is distributed without an Apple Developer certificate, macOS will block it on first launch:
+>
+> 1. Try opening **CFT Manager** once (macOS will show a prompt saying the developer cannot be verified). Click **Done** or **Cancel**.
+> 2. Go to **System Settings → Privacy & Security**.
+> 3. Scroll down to the **Security** section.
+> 4. Click **Open Anyway** next to the message about CFT Manager.
+> 5. Enter your Mac password or use Touch ID, then click **Open**.
+>
+> _Tip: You only need to do this once. Subsequent launches will open normally._
 
 ---
 

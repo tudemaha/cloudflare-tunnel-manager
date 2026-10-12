@@ -25,6 +25,7 @@ Package.resolved
 
 # App packaging
 *.ipa
+*.dmg
 *.dSYM.zip
 *.dSYM
 
