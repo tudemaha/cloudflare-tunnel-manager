@@ -31,6 +31,23 @@ struct ListView: View {
             }
         }
         .listStyle(.sidebar)
+        .overlay {
+            if accesses.isEmpty {
+                ContentUnavailableView {
+                    Label("No Connections", systemImage: "network.slash")
+                } description: {
+                    Text("Add a connection to get started.")
+                } actions: {
+                    Button {
+                        isShowAddSheet = true
+                    } label: {
+                        Label("Add Connection", systemImage: "plus")
+                    }
+                    .buttonStyle(.borderedProminent)
+                }
+                .padding()
+            }
+        }
         .navigationSplitViewColumnWidth(min: 200, ideal: 260, max: 400)
         .toolbar {
             ToolbarItem(placement: .automatic) {
@@ -65,7 +82,7 @@ struct ListView: View {
     }
 }
 
-#Preview {
+#Preview("Populated") {
     let config = ModelConfiguration(isStoredInMemoryOnly: true)
     let container = try! ModelContainer(for: Access.self, configurations: config)
     for sample in Access.sampleData {
@@ -75,3 +92,12 @@ struct ListView: View {
     return ListView(selectedAccess: .constant(Access.sampleData.first))
         .modelContainer(container)
 }
+
+#Preview("Empty") {
+    let config = ModelConfiguration(isStoredInMemoryOnly: true)
+    let container = try! ModelContainer(for: Access.self, configurations: config)
+    
+    return ListView(selectedAccess: .constant(nil))
+        .modelContainer(container)
+}
+
