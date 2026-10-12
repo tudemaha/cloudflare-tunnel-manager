@@ -1,6 +1,6 @@
 //
-//  DetailHeaderView.swift
-//  CloudflaredAccessManager
+//  DetailHeader.swift
+//  CloudflareTunnelManager
 //
 //  Created by Tude Maha on 11/10/2026.
 //
@@ -8,23 +8,23 @@
 import SwiftUI
 
 struct DetailHeader: View {
-    let access: Access
+    let tunnel: Tunnel
     let onEdit: () -> Void
     let onDelete: () -> Void
 
     var body: some View {
         HStack(spacing: 12) {
-            Image(systemName: access.state.icon)
+            Image(systemName: tunnel.state.icon)
                 .font(.title2)
-                .foregroundStyle(access.state.color)
+                .foregroundStyle(tunnel.state.color)
 
             VStack(alignment: .leading, spacing: 2) {
-                Text(access.remoteHostname.absoluteString)
+                Text(tunnel.remoteHostname.absoluteString)
                     .font(.title3.bold())
                     .lineLimit(1)
 
                 HStack(spacing: 8) {
-                    Text(access.connectionType.displayName)
+                    Text(tunnel.connectionType.displayName)
                         .font(.caption.bold())
                         .padding(.horizontal, 6)
                         .padding(.vertical, 2)
@@ -32,7 +32,7 @@ struct DetailHeader: View {
                         .foregroundStyle(.blue)
                         .cornerRadius(4)
 
-                    Text("Status: \(access.state.rawValue)")
+                    Text("Status: \(tunnel.state.rawValue)")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -59,7 +59,7 @@ struct DetailHeader: View {
 
 #Preview {
     DetailHeader(
-        access: Access.sampleData.first!,
+        tunnel: Tunnel.sampleData.first!,
         onEdit: { },
         onDelete: { }
     )

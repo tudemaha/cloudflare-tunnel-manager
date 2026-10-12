@@ -1,6 +1,6 @@
 //
-//  AccessListView.swift
-//  CloudflaredAccessManager
+//  ListView.swift
+//  CloudflareTunnelManager
 //
 //  Created by Tude Maha on 11/10/2026.
 //
@@ -9,21 +9,20 @@ import SwiftUI
 import SwiftData
 
 struct ListView: View {
-    @Query private var accesses: [Access]
-    @Binding var selectedAccess: Access?
+    @Query private var tunnels: [Tunnel]
+    @Binding var selectedTunnel: Tunnel?
     
     @State private var isShowAddSheet = false
     @State private var showErrorAlert = false
     @State private var errorMessage = ""
-
     
     var body: some View {
-        List(selection: $selectedAccess) {
-            ForEach(accesses) { access in
-                Item(access: access)
+        List(selection: $selectedTunnel) {
+            ForEach(tunnels) { tunnel in
+                Item(tunnel: tunnel)
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                         Button(role: .destructive) {
-                            deleteAccess(access)
+                            deleteTunnel(tunnel)
                         } label: {
                             Label("Delete", systemImage: "trash")
                         }
@@ -32,16 +31,16 @@ struct ListView: View {
         }
         .listStyle(.sidebar)
         .overlay {
-            if accesses.isEmpty {
+            if tunnels.isEmpty {
                 ContentUnavailableView {
-                    Label("No Connections", systemImage: "network.slash")
+                    Label("No Tunnels", systemImage: "network.slash")
                 } description: {
-                    Text("Add a connection to get started.")
+                    Text("Add a tunnel to get started.")
                 } actions: {
                     Button {
                         isShowAddSheet = true
                     } label: {
-                        Label("Add Connection", systemImage: "plus")
+                        Label("Add Tunnel", systemImage: "plus")
                     }
                     .buttonStyle(.borderedProminent)
                 }
@@ -54,13 +53,13 @@ struct ListView: View {
                 Button {
                     isShowAddSheet = true
                 } label: {
-                    Label("Add Connection", systemImage: "plus")
+                    Label("Add Tunnel", systemImage: "plus")
                 }
-                .help("Add new Cloudflared access connection")
+                .help("Add new Cloudflared tunnel")
             }
         }
         .sheet(isPresented: $isShowAddSheet) {
-            AccessFormView()
+            TunnelFormView()
         }
         .alert("Error", isPresented: $showErrorAlert) {
             Button("OK", role: .cancel) { }
@@ -69,12 +68,12 @@ struct ListView: View {
         }
     }
     
-    private func deleteAccess(_ access: Access) {
-        if selectedAccess == access {
-            selectedAccess = nil
+    private func deleteTunnel(_ tunnel: Tunnel) {
+        if selectedTunnel == tunnel {
+            selectedTunnel = nil
         }
         do {
-            try AccessStorageManager.shared.delete(access: access)
+            try TunnelStorageManager.shared.delete(tunnel: tunnel)
         } catch {
             errorMessage = error.localizedDescription
             showErrorAlert = true
@@ -84,20 +83,19 @@ struct ListView: View {
 
 #Preview("Populated") {
     let config = ModelConfiguration(isStoredInMemoryOnly: true)
-    let container = try! ModelContainer(for: Access.self, configurations: config)
-    for sample in Access.sampleData {
+    let container = try! ModelContainer(for: Tunnel.self, configurations: config)
+    for sample in Tunnel.sampleData {
         container.mainContext.insert(sample)
     }
     
-    return ListView(selectedAccess: .constant(Access.sampleData.first))
+    return ListView(selectedTunnel: .constant(Tunnel.sampleData.first))
         .modelContainer(container)
 }
 
 #Preview("Empty") {
     let config = ModelConfiguration(isStoredInMemoryOnly: true)
-    let container = try! ModelContainer(for: Access.self, configurations: config)
+    let container = try! ModelContainer(for: Tunnel.self, configurations: config)
     
-    return ListView(selectedAccess: .constant(nil))
+    return ListView(selectedTunnel: .constant(nil))
         .modelContainer(container)
 }
-

@@ -1,6 +1,6 @@
 //
 //  ProcessManager.swift
-//  CloudflaredAccessManager
+//  CloudflareTunnelManager
 //
 //  Created by Tude Maha on 12/10/2026.
 //
@@ -35,8 +35,8 @@ class ProcessManager {
         activeProcesses[host]?.isRunning ?? false
     }
     
-    func start(access: Access) throws {
-        let host = access.remoteHostname.absoluteString
+    func start(tunnel: Tunnel) throws {
+        let host = tunnel.remoteHostname.absoluteString
         
         stop(for: host)
         
@@ -49,10 +49,10 @@ class ProcessManager {
         
         process.executableURL = binaryURL
         
-        let localAddress = "\(access.localHostname):\(access.localPort)"
+        let localAddress = "\(tunnel.localHostname):\(tunnel.localPort)"
         process.arguments = [
             "access",
-            access.connectionType.rawValue,
+            tunnel.connectionType.rawValue,
             "--hostname", host,
             "--url", localAddress
         ]
@@ -108,7 +108,7 @@ class ProcessManager {
         for (host, _) in activeProcesses {
             stop(for: host)
         }
-        AccessStorageManager.shared.resetAllStatesToStopped()
+        TunnelStorageManager.shared.resetAllStatesToStopped()
     }
     
     private func appendLog(_ text: String, for host: String) {

@@ -1,6 +1,6 @@
 //
 //  DetailForm.swift
-//  CloudflaredAccessManager
+//  CloudflareTunnelManager
 //
 //  Created by Tude Maha on 11/10/2026.
 //
@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 
 struct DetailForm: View {
-    let access: Access
+    let tunnel: Tunnel
     let onDelete: () -> Void
 
     @State private var isShowingEditSheet = false
@@ -17,13 +17,13 @@ struct DetailForm: View {
     @State private var showTerminal = true
 
     private var isRunning: Bool {
-        access.state == .started
+        tunnel.state == .started
     }
 
     var body: some View {
         VStack(spacing: 0) {
             DetailHeader(
-                access: access,
+                tunnel: tunnel,
                 onEdit: {
                     isShowingEditSheet = true
                 },
@@ -34,13 +34,13 @@ struct DetailForm: View {
 
             Divider()
 
-            DetailInfoForm(access: access)
+            DetailInfoForm(tunnel: tunnel)
                 .padding(.horizontal)
 
             if showTerminal {
                 Divider()
 
-                TerminalView(access: access)
+                TerminalView(tunnel: tunnel)
                     .padding(12)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
             }
@@ -71,14 +71,14 @@ struct DetailForm: View {
                             .foregroundStyle(.green)
                     }
                 }
-                .help(isRunning ? "Stop connection" : "Start connection")
+                .help(isRunning ? "Stop tunnel" : "Start tunnel")
             }
         }
         .sheet(isPresented: $isShowingEditSheet) {
-            AccessFormView(access: access)
+            TunnelFormView(tunnel: tunnel)
         }
         .confirmationDialog(
-            "Delete Connection?",
+            "Delete Tunnel?",
             isPresented: $showDeleteConfirmation,
             titleVisibility: .visible
         ) {
@@ -87,40 +87,40 @@ struct DetailForm: View {
             }
             Button("Cancel", role: .cancel) { }
         } message: {
-            Text("Are you sure you want to delete \(access.remoteHostname.absoluteString)? This action cannot be undone.")
+            Text("Are you sure you want to delete \(tunnel.remoteHostname.absoluteString)? This action cannot be undone.")
         }
     }
 
     private func togglePlay() {
-        let host = access.remoteHostname.absoluteString
+        let host = tunnel.remoteHostname.absoluteString
         
         withAnimation {
             if ProcessManager.shared.isRunning(for: host) {
                 ProcessManager.shared.stop(for: host)
-                access.state = .stopped
+                tunnel.state = .stopped
             } else {
                 do {
-                    try ProcessManager.shared.start(access: access)
-                    access.state = .started
+                    try ProcessManager.shared.start(tunnel: tunnel)
+                    tunnel.state = .started
                 } catch {
-                    access.state = .failed
+                    tunnel.state = .failed
                     print("Failed to start process: \(error.localizedDescription)")
                 }
             }
-            try? AccessStorageManager.shared.save()
+            try? TunnelStorageManager.shared.save()
         }
     }
 }
 
 #Preview {
     let config = ModelConfiguration(isStoredInMemoryOnly: true)
-    let container = try! ModelContainer(for: Access.self, configurations: config)
-    for sample in Access.sampleData {
+    let container = try! ModelContainer(for: Tunnel.self, configurations: config)
+    for sample in Tunnel.sampleData {
         container.mainContext.insert(sample)
     }
 
     return DetailForm(
-        access: Access.sampleData.first!,
+        tunnel: Tunnel.sampleData.first!,
         onDelete: { }
     )
     .modelContainer(container)

@@ -1,6 +1,6 @@
 //
-//  CloudflaredAccessManagerApp.swift
-//  CloudflaredAccessManager
+//  CloudflareTunnelManagerApp.swift
+//  CloudflareTunnelManager
 //
 //  Created by Tude Maha on 10/10/2026.
 //
@@ -9,10 +9,10 @@ import SwiftUI
 import SwiftData
 
 @main
-struct CloudflaredAccessManagerApp: App {
+struct CloudflareTunnelManagerApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            Access.self,
+            Tunnel.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
@@ -24,8 +24,8 @@ struct CloudflaredAccessManagerApp: App {
     }()
     
     init() {
-        AccessStorageManager.shared.context = sharedModelContainer.mainContext
-        AccessStorageManager.shared.resetAllStatesToStopped()
+        TunnelStorageManager.shared.context = sharedModelContainer.mainContext
+        TunnelStorageManager.shared.resetAllStatesToStopped()
     }
 
     var body: some Scene {

@@ -1,6 +1,6 @@
 //
-//  AccessStorageManager.swift
-//  CloudflaredAccessManager
+//  TunnelStorageManager.swift
+//  CloudflareTunnelManager
 //
 //  Created by Tude Maha on 10/10/2026.
 //
@@ -9,8 +9,8 @@ import Foundation
 import SwiftData
 
 @MainActor
-class AccessStorageManager {
-    static let shared = AccessStorageManager()
+class TunnelStorageManager {
+    static let shared = TunnelStorageManager()
     
     var context: ModelContext?
     
@@ -30,39 +30,39 @@ class AccessStorageManager {
         }
     }
     
-    func add(access: Access) throws {
+    func add(tunnel: Tunnel) throws {
         guard let context = context else { throw StorageError.contextMissing }
-        context.insert(access)
+        context.insert(tunnel)
         try save()
     }
     
-    func delete(access: Access) throws {
+    func delete(tunnel: Tunnel) throws {
         guard let context = context else { throw StorageError.contextMissing }
-        context.delete(access)
+        context.delete(tunnel)
         try save()
     }
     
-    func fetchAll() throws -> [Access] {
+    func fetchAll() throws -> [Tunnel] {
         guard let context = context else { throw StorageError.contextMissing }
-        let descriptor = FetchDescriptor<Access>()
+        let descriptor = FetchDescriptor<Tunnel>()
         return try context.fetch(descriptor)
     }
     
     func resetAllStatesToStopped() {
         guard let context = context else { return }
         do {
-            let descriptor = FetchDescriptor<Access>()
-            let accesses = try context.fetch(descriptor)
+            let descriptor = FetchDescriptor<Tunnel>()
+            let tunnels = try context.fetch(descriptor)
             var hasChanges = false
-            for access in accesses where access.state == .started {
-                access.state = .stopped
+            for tunnel in tunnels where tunnel.state == .started {
+                tunnel.state = .stopped
                 hasChanges = true
             }
             if hasChanges {
                 try save()
             }
         } catch {
-            print("Failed to reset running access states: \(error.localizedDescription)")
+            print("Failed to reset running tunnel states: \(error.localizedDescription)")
         }
     }
     
@@ -75,4 +75,3 @@ class AccessStorageManager {
         }
     }
 }
-

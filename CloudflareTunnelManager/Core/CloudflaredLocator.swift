@@ -1,6 +1,6 @@
 //
 //  CloudflaredLocator.swift
-//  CloudflaredAccessManager
+//  CloudflareTunnelManager
 //
 //  Created by Tude Maha on 12/10/2026.
 //

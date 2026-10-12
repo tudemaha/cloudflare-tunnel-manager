@@ -1,6 +1,6 @@
 //
 //  TerminalView.swift
-//  CloudflaredAccessManager
+//  CloudflareTunnelManager
 //
 //  Created by Tude Maha on 11/10/2026.
 //
@@ -9,15 +9,15 @@ import SwiftUI
 import SwiftData
 
 struct TerminalView: View {
-    let access: Access
+    let tunnel: Tunnel
     private var processManager = ProcessManager.shared
     
-    init(access: Access) {
-        self.access = access
+    init(tunnel: Tunnel) {
+        self.tunnel = tunnel
     }
     
     private var currentLogs: [String] {
-        processManager.logs[access.remoteHostname.absoluteString] ?? []
+        processManager.logs[tunnel.remoteHostname.absoluteString] ?? []
     }
 
     var body: some View {
@@ -62,8 +62,8 @@ struct TerminalView: View {
 }
 
 #Preview {
-    TerminalView(access: Access.sampleData.first!)
+    TerminalView(tunnel: Tunnel.sampleData.first!)
         .padding()
         .frame(width: 550, height: 300)
-        .modelContainer(for: Access.self, inMemory: true)
+        .modelContainer(for: Tunnel.self, inMemory: true)
 }

@@ -1,6 +1,6 @@
 //
 //  DetailInfoForm.swift
-//  CloudflaredAccessManager
+//  CloudflareTunnelManager
 //
 //  Created by Tude Maha on 11/10/2026.
 //
@@ -9,16 +9,16 @@ import SwiftUI
 import SwiftData
 
 struct DetailInfoForm: View {
-    let access: Access
+    let tunnel: Tunnel
     @State private var copiedCommand = false
 
     var body: some View {
         Form {
-            Section("Connection Details") {
-                LabeledContent("Remote Hostname", value: access.remoteHostname.absoluteString)
-                LabeledContent("Connection Type", value: access.connectionType.displayName)
-                LabeledContent("Local Hostname", value: access.localHostname)
-                LabeledContent("Local Port", value: String(access.localPort))
+            Section("Tunnel Details") {
+                LabeledContent("Remote Hostname", value: tunnel.remoteHostname.absoluteString)
+                LabeledContent("Connection Type", value: tunnel.connectionType.displayName)
+                LabeledContent("Local Hostname", value: tunnel.localHostname)
+                LabeledContent("Local Port", value: String(tunnel.localPort))
             }
 
             Section("Command Preview") {
@@ -54,17 +54,17 @@ struct DetailInfoForm: View {
     }
 
     private var commandString: String {
-        "cloudflared access \(access.connectionType.rawValue) --hostname \(access.remoteHostname.absoluteString) --url \(access.localHostname):\(access.localPort)"
+        "cloudflared access \(tunnel.connectionType.rawValue) --hostname \(tunnel.remoteHostname.absoluteString) --url \(tunnel.localHostname):\(tunnel.localPort)"
     }
 }
 
 #Preview {
     let config = ModelConfiguration(isStoredInMemoryOnly: true)
-    let container = try! ModelContainer(for: Access.self, configurations: config)
-    for sample in Access.sampleData {
+    let container = try! ModelContainer(for: Tunnel.self, configurations: config)
+    for sample in Tunnel.sampleData {
         container.mainContext.insert(sample)
     }
 
-    return DetailInfoForm(access: Access.sampleData.first!)
+    return DetailInfoForm(tunnel: Tunnel.sampleData.first!)
         .modelContainer(container)
 }

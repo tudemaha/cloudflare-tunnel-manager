@@ -1,6 +1,6 @@
 //
-//  Item.swift
-//  CloudflaredAccessManager
+//  Tunnel.swift
+//  CloudflareTunnelManager
 //
 //  Created by Tude Maha on 10/10/2026.
 //
@@ -45,7 +45,7 @@ enum execState: String, Codable {
 }
 
 @Model
-final class Access {
+final class Tunnel {
     var connectionType: ConnectionType
     @Attribute(.unique) var remoteHostname: URL
     var localHostname: String
@@ -66,10 +66,10 @@ final class Access {
     }
 }
 
-extension Access {
+extension Tunnel {
     @MainActor
-    static var sampleData: [Access] {
-        let sample1 = Access(
+    static var sampleData: [Tunnel] {
+        let sample1 = Tunnel(
             connectionType: .ssh,
             remoteHostname: URL(string: "ssh.production.example.com")!,
             localHostname: "localhost",
@@ -77,7 +77,7 @@ extension Access {
         )
         sample1.state = .started
 
-        let sample2 = Access(
+        let sample2 = Tunnel(
             connectionType: .rdp,
             remoteHostname: URL(string: "desktop.office.internal")!,
             localHostname: "localhost",
@@ -85,7 +85,7 @@ extension Access {
         )
         sample2.state = .stopped
 
-        let sample3 = Access(
+        let sample3 = Tunnel(
             connectionType: .tcp,
             remoteHostname: URL(string: "db.internal.net")!,
             localHostname: "127.0.0.1",
@@ -93,7 +93,7 @@ extension Access {
         )
         sample3.state = .failed
 
-        let sample4 = Access(
+        let sample4 = Tunnel(
             connectionType: .smb,
             remoteHostname: URL(string: "nas.storage.corp")!,
             localHostname: "localhost",

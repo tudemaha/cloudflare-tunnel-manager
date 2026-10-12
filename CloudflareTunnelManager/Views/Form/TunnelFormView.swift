@@ -1,6 +1,6 @@
 //
-//  AccessFormView.swift
-//  CloudflaredAccessManager
+//  TunnelFormView.swift
+//  CloudflareTunnelManager
 //
 //  Created by Tude Maha on 11/10/2026.
 //
@@ -8,8 +8,8 @@
 import SwiftUI
 import SwiftData
 
-struct AccessFormView: View {
-    var access: Access? = nil
+struct TunnelFormView: View {
+    var tunnel: Tunnel? = nil
     
     @Environment(\.dismiss) private var dismiss
 
@@ -21,16 +21,16 @@ struct AccessFormView: View {
     @State private var showErrorAlert: Bool = false
     @State private var errorMessage: String = ""
 
-    init(access: Access? = nil) {
-        self.access = access
-        _remoteHostname = State(initialValue: access?.remoteHostname.absoluteString ?? "")
-        _localHostname = State(initialValue: access?.localHostname ?? "localhost")
-        _localPort = State(initialValue: access != nil ? String(access!.localPort) : "")
-        _connectionType = State(initialValue: access?.connectionType ?? .tcp)
+    init(tunnel: Tunnel? = nil) {
+        self.tunnel = tunnel
+        _remoteHostname = State(initialValue: tunnel?.remoteHostname.absoluteString ?? "")
+        _localHostname = State(initialValue: tunnel?.localHostname ?? "localhost")
+        _localPort = State(initialValue: tunnel != nil ? String(tunnel!.localPort) : "")
+        _connectionType = State(initialValue: tunnel?.connectionType ?? .tcp)
     }
 
     private var isEditing: Bool {
-        access != nil
+        tunnel != nil
     }
 
     private var isValid: Bool {
@@ -44,7 +44,7 @@ struct AccessFormView: View {
         VStack(spacing: 0) {
             // Header
             HStack {
-                Text(isEditing ? "Edit Connection" : "Add Connection")
+                Text(isEditing ? "Edit Tunnel" : "Add Tunnel")
                     .font(.headline)
                 Spacer()
             }
@@ -85,7 +85,7 @@ struct AccessFormView: View {
                 Spacer()
 
                 Button(isEditing ? "Update" : "Save") {
-                    saveAccess()
+                    saveTunnel()
                 }
                 .buttonStyle(.borderedProminent)
                 .keyboardShortcut(.defaultAction)
@@ -94,14 +94,14 @@ struct AccessFormView: View {
             .padding()
         }
         .frame(width: 440, height: 380)
-        .alert("Error Saving Connection", isPresented: $showErrorAlert) {
+        .alert("Error Saving Tunnel", isPresented: $showErrorAlert) {
             Button("OK", role: .cancel) { }
         } message: {
             Text(errorMessage)
         }
     }
 
-    private func saveAccess() {
+    private func saveTunnel() {
         let trimmedRemote = remoteHostname.trimmingCharacters(in: .whitespacesAndNewlines)
         let trimmedLocal = localHostname.trimmingCharacters(in: .whitespacesAndNewlines)
         
@@ -124,20 +124,20 @@ struct AccessFormView: View {
         }
 
         do {
-            if let access {
-                access.connectionType = connectionType
-                access.remoteHostname = url
-                access.localHostname = trimmedLocal
-                access.localPort = port
-                try AccessStorageManager.shared.save()
+            if let tunnel {
+                tunnel.connectionType = connectionType
+                tunnel.remoteHostname = url
+                tunnel.localHostname = trimmedLocal
+                tunnel.localPort = port
+                try TunnelStorageManager.shared.save()
             } else {
-                let newAccess = Access(
+                let newTunnel = Tunnel(
                     connectionType: connectionType,
                     remoteHostname: url,
                     localHostname: trimmedLocal,
                     localPort: port
                 )
-                try AccessStorageManager.shared.add(access: newAccess)
+                try TunnelStorageManager.shared.add(tunnel: newTunnel)
             }
             dismiss()
         } catch {
@@ -148,11 +148,11 @@ struct AccessFormView: View {
 }
 
 #Preview("Add Mode") {
-    AccessFormView()
-        .modelContainer(for: Access.self, inMemory: true)
+    TunnelFormView()
+        .modelContainer(for: Tunnel.self, inMemory: true)
 }
 
 #Preview("Edit Mode") {
-    AccessFormView(access: Access.sampleData.first!)
-        .modelContainer(for: Access.self, inMemory: true)
+    TunnelFormView(tunnel: Tunnel.sampleData.first!)
+        .modelContainer(for: Tunnel.self, inMemory: true)
 }
