@@ -14,7 +14,7 @@ struct DetailForm: View {
 
     @State private var isShowingEditSheet = false
     @State private var showDeleteConfirmation = false
-    @State private var showTerminal = false
+    @State private var showTerminal = true
 
     private var isRunning: Bool {
         access.state == .started
@@ -85,6 +85,21 @@ struct DetailForm: View {
     }
 
     private func togglePlay() {
+        let host = access.remoteHostname.absoluteString
+        
+        if ProcessManager.shared.isRunning(for: host) {
+            ProcessManager.shared.stop(for: host)
+            access.state = .stopped
+        } else {
+            do {
+                try ProcessManager.shared.start(access: access)
+                access.state = .started
+            } catch {
+                access.state = .failed
+                print("Failed to start process: \(error.localizedDescription)")
+            }
+        }
+        
         withAnimation {
             if access.state == .started {
                 access.state = .stopped
