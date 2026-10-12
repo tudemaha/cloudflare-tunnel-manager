@@ -37,7 +37,7 @@ struct DetailForm: View {
             DetailInfoForm(access: access)
                 .padding(.horizontal)
 
-            if showTerminal || isRunning {
+            if showTerminal {
                 Divider()
 
                 TerminalView(access: access)
@@ -45,14 +45,21 @@ struct DetailForm: View {
                     .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
-        .animation(.easeInOut(duration: 0.25), value: showTerminal || isRunning)
-        .onAppear {
-            if access.state == .started {
-                showTerminal = true
-            }
-        }
+        .animation(.easeInOut(duration: 0.25), value: showTerminal)
         .toolbar {
-            ToolbarItem(placement: .primaryAction) {
+            ToolbarItemGroup(placement: .primaryAction) {
+                Button {
+                    withAnimation {
+                        showTerminal.toggle()
+                    }
+                } label: {
+                    Label(
+                        showTerminal ? "Hide Terminal" : "Show Terminal",
+                        systemImage: showTerminal ? "terminal.fill" : "terminal"
+                    )
+                }
+                .help(showTerminal ? "Hide terminal output" : "Show terminal output")
+
                 Button {
                     togglePlay()
                 } label: {
@@ -87,25 +94,18 @@ struct DetailForm: View {
     private func togglePlay() {
         let host = access.remoteHostname.absoluteString
         
-        if ProcessManager.shared.isRunning(for: host) {
-            ProcessManager.shared.stop(for: host)
-            access.state = .stopped
-        } else {
-            do {
-                try ProcessManager.shared.start(access: access)
-                access.state = .started
-            } catch {
-                access.state = .failed
-                print("Failed to start process: \(error.localizedDescription)")
-            }
-        }
-        
         withAnimation {
-            if access.state == .started {
+            if ProcessManager.shared.isRunning(for: host) {
+                ProcessManager.shared.stop(for: host)
                 access.state = .stopped
             } else {
-                access.state = .started
-                showTerminal = true
+                do {
+                    try ProcessManager.shared.start(access: access)
+                    access.state = .started
+                } catch {
+                    access.state = .failed
+                    print("Failed to start process: \(error.localizedDescription)")
+                }
             }
             try? AccessStorageManager.shared.save()
         }

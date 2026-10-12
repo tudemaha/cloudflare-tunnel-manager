@@ -30,11 +30,26 @@ struct TerminalView: View {
                                 .font(.system(size: 11, design: .monospaced))
                                 .foregroundStyle(.white.opacity(0.9))
                         }
+
+                        // Invisible anchor view for bottom auto-scrolling
+                        Color.clear
+                            .frame(height: 1)
+                            .id("bottomID")
                     }
                     .padding(10)
                     .frame(maxWidth: .infinity, alignment: .leading)
+                    .textSelection(.enabled)
                 }
+                .defaultScrollAnchor(.bottom)
                 .background(Color(red: 0.08, green: 0.09, blue: 0.11))
+                .onChange(of: currentLogs.count) { _, _ in
+                    withAnimation(.easeOut(duration: 0.2)) {
+                        proxy.scrollTo("bottomID", anchor: .bottom)
+                    }
+                }
+                .onAppear {
+                    proxy.scrollTo("bottomID", anchor: .bottom)
+                }
             }
         }
         .clipShape(RoundedRectangle(cornerRadius: 8))
