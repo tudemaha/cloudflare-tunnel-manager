@@ -25,6 +25,7 @@ struct CloudflaredAccessManagerApp: App {
     
     init() {
         AccessStorageManager.shared.context = sharedModelContainer.mainContext
+        AccessStorageManager.shared.resetAllStatesToStopped()
     }
 
     var body: some Scene {

@@ -48,6 +48,24 @@ class AccessStorageManager {
         return try context.fetch(descriptor)
     }
     
+    func resetAllStatesToStopped() {
+        guard let context = context else { return }
+        do {
+            let descriptor = FetchDescriptor<Access>()
+            let accesses = try context.fetch(descriptor)
+            var hasChanges = false
+            for access in accesses where access.state == .started {
+                access.state = .stopped
+                hasChanges = true
+            }
+            if hasChanges {
+                try save()
+            }
+        } catch {
+            print("Failed to reset running access states: \(error.localizedDescription)")
+        }
+    }
+    
     func save() throws {
         guard let context = context else { throw StorageError.contextMissing }
         do {
@@ -57,3 +75,4 @@ class AccessStorageManager {
         }
     }
 }
+

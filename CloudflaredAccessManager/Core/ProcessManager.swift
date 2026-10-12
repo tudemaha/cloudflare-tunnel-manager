@@ -108,6 +108,7 @@ class ProcessManager {
         for (host, _) in activeProcesses {
             stop(for: host)
         }
+        AccessStorageManager.shared.resetAllStatesToStopped()
     }
     
     private func appendLog(_ text: String, for host: String) {
